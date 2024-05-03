@@ -1,4 +1,6 @@
 ## Overview
+![image](https://github.com/ihd-lab/labflow-example/assets/140085362/8c951743-2f35-4b00-9b71-8e49961c875e)
+
 This repository is provided to improve the onboarding experience of IHDLab LabFlow customers.
 
 - This application is meant to provide a simple demonstration of how to use the LabFlow API.
