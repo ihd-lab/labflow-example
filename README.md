@@ -27,21 +27,21 @@ You may also see any lint errors in the console.
 Runs the `prettier` check for formatting.
 
 ## Disclaimers
-This software is provided "as is", without warranty of any kind, express or implied, 
-including but not limited to the warranties of merchantability, fitness for a particular 
-purpose and noninfringement. In no event shall the authors or copyright holders be liable 
-for any claim, damages or other liability, whether in an action of contract, tort or otherwise, 
+This software is provided "as is", without warranty of any kind, express or implied,
+including but not limited to the warranties of merchantability, fitness for a particular
+purpose and noninfringement. In no event shall the authors or copyright holders be liable
+for any claim, damages or other liability, whether in an action of contract, tort or otherwise,
 arising from, out of or in connection with the software or the use or other dealings in the software.
 
-This is an open-source application designed for educational and demonstrative purposes only. 
-It is not intended for production use. The application is not optimized for performance, 
-security, or scalability. It does not represent best practices in software development, 
+This is an open-source application designed for educational and demonstrative purposes only.
+It is not intended for production use. The application is not optimized for performance,
+security, or scalability. It does not represent best practices in software development,
 ReactJS, or any other technology used.
 
-Use this application at your own risk and discretion. The authors and contributors are 
+Use this application at your own risk and discretion. The authors and contributors are
 not responsible for any damage or loss resulting from the use of this software.
 
-### Futhermore  
+### Additional Disclaimers
 - This application is not intended be used in a production environment.
 - This application is not optimized for performance or security.
 - This application is not intended to demonstrate best practices in reactjs or related libraries.
