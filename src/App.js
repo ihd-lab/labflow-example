@@ -18,7 +18,10 @@ import {
   getFirstConfiguredKit,
   createKitOrderById,
   createLabOrderById,
+  createLabOrderByIdResulted,
+  createLabOrderByIdRejected,
   createFailedLabOrderById,
+  createFailedKitOrderById,
   getOrderById,
   cancelOrderById,
   getRegistrationCode,
@@ -86,8 +89,7 @@ function App() {
     // Get all kits and find the one that matches the paneld provided, then populate the kitId for subsequent actions
     populateOutput("Populating kit by externalId...")
 
-    const { apiCall, response, data, output } =
-      await getConfiguredKits(panelIdValue)
+    const { apiCall, response, data, output } = await getConfiguredKits(panelIdValue)
     console.trace(response)
 
     if (data) {
@@ -102,8 +104,7 @@ function App() {
     // Create a kit order, then populate the orderId for subsequent actions
     populateOutput("Creating kit order...")
 
-    const { apiCall, response, data, output } =
-      await createKitOrderById(kitIdValue)
+    const { apiCall, response, data, output } = await createKitOrderById(kitIdValue)
     console.trace(response)
 
     if (data) {
@@ -117,8 +118,7 @@ function App() {
     // Create a lab order, then populate the orderId for subsequent actions
     populateOutput("Creating lab order...")
 
-    const { apiCall, response, data, output } =
-      await createLabOrderById(kitIdValue)
+    const { apiCall, response, data, output } = await createLabOrderById(kitIdValue)
     console.trace(response)
 
     if (data) {
@@ -128,12 +128,53 @@ function App() {
     populateOutput(apiCall, data, output)
   }
 
+  const handleCreateLabOrderResulted = async () => {
+    // Create a lab order, then populate the orderId for subsequent actions
+    populateOutput("Creating lab order with results...")
+
+    const { apiCall, response, data, output } = await createLabOrderByIdResulted(kitIdValue)
+    console.trace(response)
+
+    if (data) {
+      setOrderId(data.id || "")
+    }
+
+    populateOutput(apiCall, data, output)
+  }
+
+  const handleCreateLabOrderRejected = async () => {
+    // Create a lab order, then populate the orderId for subsequent actions
+    populateOutput("Creating lab order with rejections...")
+
+    const { apiCall, response, data, output } = await createLabOrderByIdRejected(kitIdValue)
+    console.trace(response)
+
+    if (data) {
+      setOrderId(data.id || "")
+    }
+
+    populateOutput(apiCall, data, output)
+  }
+
+  const handleCreateFailedKitOrder = async () => {
+    // Create a lab order, then populate the orderId for subsequent actions
+    populateOutput("Creating failed kit order ...")
+
+    const { apiCall, response, data, output } = await createFailedKitOrderById(kitIdValue)
+    console.trace(response)
+
+    if (data) {
+      setOrderId("")
+    }
+
+    populateOutput(apiCall, data, output)
+  }
+
   const handleCreateFailedLabOrder = async () => {
     // Create a lab order, then populate the orderId for subsequent actions
     populateOutput("Creating failed order ...")
 
-    const { apiCall, response, data, output } =
-      await createFailedLabOrderById(kitIdValue)
+    const { apiCall, response, data, output } = await createFailedLabOrderById(kitIdValue)
     console.trace(response)
 
     if (data) {
@@ -147,10 +188,7 @@ function App() {
     // Get an order by orderId
     populateOutput("Fetching order...")
 
-    const { apiCall, response, data, output } = await getOrderById(
-      orderId,
-      isComplete
-    )
+    const { apiCall, response, data, output } = await getOrderById(orderId, isComplete)
     console.trace(response)
 
     populateOutput(apiCall, data, output)
@@ -170,17 +208,12 @@ function App() {
     // Populate the registration code for subsequent actions
     populateOutput("Populating registration code...")
 
-    const { apiCall, response, data, output } =
-      await getRegistrationCode(orderId)
+    const { apiCall, response, data, output } = await getRegistrationCode(orderId)
     console.trace(response)
 
     if (data) {
       setRegistrationCode(data?.kit?.registrationCode || "")
-      populateOutput(
-        apiCall,
-        data,
-        "Registration code populated in the textbox"
-      )
+      populateOutput(apiCall, data, "Registration code populated in the textbox")
     } else {
       populateOutput(apiCall, data, output)
     }
@@ -207,8 +240,7 @@ function App() {
   const handleProcessInbox = async () => {
     populateOutput("Processing inbox...", "")
 
-    const { apiCall, response, data, output } =
-      await processInbox(clearAfterProcess)
+    const { apiCall, response, data, output } = await processInbox(clearAfterProcess)
     console.trace(response)
 
     populateOutput(apiCall, data, output)
@@ -217,8 +249,7 @@ function App() {
   const handleRegisterOrder = async () => {
     populateOutput("Registering order...")
 
-    const { apiCall, response, data, output } =
-      await registerOrder(registrationCode)
+    const { apiCall, response, data, output } = await registerOrder(registrationCode)
     console.trace(response)
 
     populateOutput(apiCall, data, output)
@@ -227,8 +258,7 @@ function App() {
   const handleAddMockReceived = async () => {
     populateOutput("Adding mock kit received...")
 
-    const { apiCall, response, data, output } =
-      await addMockKitReceived(registrationCode)
+    const { apiCall, response, data, output } = await addMockKitReceived(registrationCode)
     console.trace(response)
 
     populateOutput(apiCall, data, output)
@@ -237,8 +267,7 @@ function App() {
   const handleAddMockResults = async () => {
     populateOutput("Adding mock results...")
 
-    const { apiCall, response, data, output } =
-      await addMockResults(registrationCode)
+    const { apiCall, response, data, output } = await addMockResults(registrationCode)
     console.trace(response)
 
     populateOutput(apiCall, data, output)
@@ -247,8 +276,7 @@ function App() {
   const handleAddMockRejections = async () => {
     populateOutput("Adding mock rejections...")
 
-    const { apiCall, response, data, output } =
-      await addMockRejections(registrationCode)
+    const { apiCall, response, data, output } = await addMockRejections(registrationCode)
     console.trace(response)
 
     populateOutput(apiCall, data, output)
@@ -258,11 +286,7 @@ function App() {
     <div className="app-container">
       <header>
         <img src={logo} alt="Labflow Logo" />
-        <a
-          href="https://labflow.ihdlab.com"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a href="https://labflow.ihdlab.com" target="_blank" rel="noopener noreferrer">
           IHD Labflow Documentation
           <svg
             viewBox="0 0 24 24"
@@ -273,11 +297,7 @@ function App() {
             className="external-link-icon"
           >
             <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-            <g
-              id="SVGRepo_tracerCarrier"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            ></g>
+            <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
             <g id="SVGRepo_iconCarrier">
               {" "}
               <g id="Interface / External_Link">
@@ -302,9 +322,7 @@ function App() {
             <h3>Section 1: Base Data</h3>
             <div className="split">
               <button onClick={handleGetAllKits}>Get Configured Kits</button>
-              <button onClick={handlePopulateFirstPanelId}>
-                Populate First Panel Id
-              </button>
+              <button onClick={handlePopulateFirstPanelId}>Populate First Panel Id</button>
             </div>
           </div>
           <div className="section">
@@ -316,9 +334,7 @@ function App() {
                 onChange={(e) => setPanelIdValue(e.target.value)}
                 placeholder="Panel ID"
               />
-              <button onClick={handlePopulateKit}>
-                Populate Kit by Panel Id
-              </button>
+              <button onClick={handlePopulateKit}>Populate Kit by Panel Id</button>
             </div>
             <input
               type="text"
@@ -326,12 +342,21 @@ function App() {
               onChange={(e) => setKitIdValue(e.target.value)}
               placeholder="Kit ID"
             />
-            <div className="split split-3">
+            <hr />
+            <h5>Kit Orders</h5>
+            <div className="split">
               <button onClick={handleCreateKitOrder}>Create Kit Order</button>
+              <button onClick={handleCreateFailedKitOrder}>Create w/ Errors</button>
+            </div>
+            <hr />
+            <h5>Lab Orders</h5>
+            <div className="split">
               <button onClick={handleCreateLabOrder}>Create Lab Order</button>
-              <button onClick={handleCreateFailedLabOrder}>
-                Create w/ Errors
-              </button>
+              <button onClick={handleCreateFailedLabOrder}>Create w/ Errors</button>
+            </div>
+            <div className="split">
+              <button onClick={handleCreateLabOrderResulted}>Create w/ Mock Results</button>
+              <button onClick={handleCreateLabOrderRejected}>Create w/ Mock Rejections</button>
             </div>
           </div>
           <div className="section">
@@ -356,13 +381,11 @@ function App() {
             </div>
             <div className="split">
               <button onClick={handleCancelOrder}>Cancel Order</button>
-              <button onClick={handlePopulateRegCode}>
-                Populate Registration Code
-              </button>
+              <button onClick={handlePopulateRegCode}>Populate Registration Code</button>
             </div>
           </div>
           <div className="section">
-            <h3>Section 4: Registering an Order</h3>
+            <h3>Section 4: Registering an Order (Kit Flow)</h3>
             <input
               type="text"
               value={registrationCode}
@@ -371,15 +394,11 @@ function App() {
             />
             <div className="split">
               <button onClick={handleRegisterOrder}>Register Order</button>
-              <button onClick={handleAddMockReceived}>
-                Add Mock Kit Received
-              </button>
+              <button onClick={handleAddMockReceived}>Add Mock Kit Received</button>
             </div>
             <div className="split">
               <button onClick={handleAddMockResults}>Add Mock Results</button>
-              <button onClick={handleAddMockRejections}>
-                Add Mock Rejections
-              </button>
+              <button onClick={handleAddMockRejections}>Add Mock Rejections</button>
             </div>
           </div>
           <div className="section">

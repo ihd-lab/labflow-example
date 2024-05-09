@@ -1,4 +1,5 @@
 ## Overview
+
 ![image](https://github.com/ihd-lab/labflow-example/assets/140085362/8c951743-2f35-4b00-9b71-8e49961c875e)
 
 This repository is provided to improve the onboarding experience of IHDLab LabFlow customers.
@@ -29,6 +30,7 @@ You may also see any lint errors in the console.
 Runs the `prettier` check for formatting.
 
 ## Disclaimers
+
 This software is provided "as is", without warranty of any kind, express or implied,
 including but not limited to the warranties of merchantability, fitness for a particular
 purpose and noninfringement. In no event shall the authors or copyright holders be liable
@@ -44,6 +46,7 @@ Use this application at your own risk and discretion. The authors and contributo
 not responsible for any damage or loss resulting from the use of this software.
 
 ### Additional Disclaimers
+
 - This application is not intended be used in a production environment.
 - This application is not optimized for performance or security.
 - This application is not intended to demonstrate best practices in reactjs or related libraries.

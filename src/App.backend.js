@@ -64,10 +64,7 @@ export const getConfiguredKits = async (panelId) => {
 
   if (panelId) {
     let data = ret.data
-    ret.data =
-      panelId && data
-        ? data.find((element) => element.panelId === panelId)
-        : data
+    ret.data = panelId && data ? data.find((element) => element.panelId === panelId) : data
   }
 
   return ret
@@ -92,6 +89,22 @@ export const getFirstConfiguredKit = async () => {
     data: data,
     output: output,
   }
+}
+
+async function __createKitOrder(endpoint_uri, api_key, samplePayload) {
+  const request = new Request(`${endpoint_uri}/order/kit`, {
+    method: "POST",
+    headers: {
+      "x-api-key": api_key,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(samplePayload),
+  })
+  const response = await fetch(request)
+
+  const ret = await getReturnValues(request, response)
+
+  return ret
 }
 
 /**
@@ -133,19 +146,41 @@ export const createKitOrderById = async (kitId) => {
     },
   }
 
-  const request = new Request(`${endpoint_uri}/order/kit`, {
-    method: "POST",
-    headers: {
-      "x-api-key": api_key,
-      "Content-Type": "application/json",
+  return await __createKitOrder(endpoint_uri, api_key, samplePayload)
+}
+
+export const createFailedKitOrderById = async (kitId) => {
+  const { api_key, endpoint_uri } = getConfiguration()
+
+  const samplePayload = {
+    kitId: kitId,
+    customer: {
+      firstName: "John",
+      lastName: "Doe",
+      middleName: "E.",
+      email: example_email_address,
+      shipping: {
+        name: "John E. Doe",
+        street1: "123 Main St.",
+        street2: "Apt 4B",
+        city: "New York",
+        state: "NY",
+        postalCode: "XXXXX",
+        country: "USA",
+      },
+      billing: {
+        name: "John E. Doe",
+        street1: "123 Main St.",
+        street2: "Apt 4B",
+        city: "New York",
+        state: "NY",
+        postalCode: "10001",
+        country: "USA",
+      },
     },
-    body: JSON.stringify(samplePayload),
-  })
-  const response = await fetch(request)
+  }
 
-  const ret = await getReturnValues(request, response)
-
-  return ret
+  return await __createKitOrder(endpoint_uri, api_key, samplePayload)
 }
 
 /**
@@ -154,7 +189,7 @@ export const createKitOrderById = async (kitId) => {
  * @returns {Promise<{string, Object, Object, string}>} A promise that resolves to API call, response object, data object, and output string.
  * @remarks This method can take longer, because it also includes sending the order to the lab integration.
  */
-export const createLabOrderById = async (kitId) => {
+export const createLabOrderById = async (kitId, testType) => {
   const { api_key, endpoint_uri } = getConfiguration()
 
   const samplePayload = {
@@ -183,7 +218,18 @@ export const createLabOrderById = async (kitId) => {
     dateRegistered: new Date().toISOString(), // can be any valid ISO string
   }
 
-  const request = new Request(`${endpoint_uri}/order/lab`, {
+  return await __createLabOrder(endpoint_uri, api_key, samplePayload, testType)
+}
+
+export const createLabOrderByIdResulted = (kitId) => createLabOrderById(kitId, "RESULTED")
+export const createLabOrderByIdRejected = (kitId) => createLabOrderById(kitId, "REJECTED")
+
+async function __createLabOrder(endpoint_uri, api_key, samplePayload, testType) {
+  const uri = testType
+    ? `${endpoint_uri}/order/lab?test=true&testType=${testType}`
+    : `${endpoint_uri}/order/lab`
+
+  const request = new Request(uri, {
     method: "POST",
     headers: {
       "x-api-key": api_key,
@@ -212,37 +258,25 @@ export const createFailedLabOrderById = async (kitId) => {
     patient: {
       firstName: "John",
       middleName: "E.",
-      //
+      // missing last name
       email: example_email_address,
       phone: "+1-626-456-7890",
-      dob: "04-31-1979",
-      gender: "Maler",
+      dob: "04-31-1979", // invalid date
+      gender: "Maler", // invalid gender
       //
       address: {
         name: "John E. Doe",
         state: "NY",
         postalCode: "10001",
         country: "USA",
+        // missing street address
       },
     },
     dateCreated: new Date().toISOString(), // can be any valid ISO string
     dateRegistered: new Date().toISOString(), // can be any valid ISO string
   }
 
-  const request = new Request(`${endpoint_uri}/order/lab`, {
-    method: "POST",
-    headers: {
-      "x-api-key": api_key,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(samplePayload),
-  })
-
-  const response = await fetch(request)
-
-  const ret = await getReturnValues(request, response)
-
-  return ret
+  return await __createLabOrder(endpoint_uri, api_key, samplePayload)
 }
 
 /**
@@ -336,9 +370,7 @@ export const getInbox = async () => {
 export const clearInbox = async (orderId) => {
   const { api_key, endpoint_uri } = getConfiguration()
 
-  const uri = orderId
-    ? `${endpoint_uri}/inbox/${orderId}`
-    : `${endpoint_uri}/inbox`
+  const uri = orderId ? `${endpoint_uri}/inbox/${orderId}` : `${endpoint_uri}/inbox`
   const request = new Request(uri, {
     method: "DELETE",
     headers: {
@@ -422,9 +454,7 @@ export const processInbox = async (clearAfterProcessing) => {
       case ORDER_STATUS.CANCELLED:
         let cr = await getOrderResults(order.id)
         processedOutput +=
-          `${order.id}: ${order.status} – ` +
-          (cr ? JSON.stringify(cr) : "No results") +
-          "\n"
+          `${order.id}: ${order.status} – ` + (cr ? JSON.stringify(cr) : "No results") + "\n"
         break
 
       // When the patient has registered, you can send a thank you to the patient for registering
@@ -447,9 +477,7 @@ export const processInbox = async (clearAfterProcessing) => {
         // Get order
         let r = await getOrderResults(order.id)
         processedOutput +=
-          `${order.id}: ${order.status} – ` +
-          (r ? JSON.stringify(r) : "No results") +
-          "\n"
+          `${order.id}: ${order.status} – ` + (r ? JSON.stringify(r) : "No results") + "\n"
 
         break
 
@@ -557,12 +585,9 @@ export const registerOrder = async (registrationCode, testType) => {
   return ret
 }
 
-export const addMockKitReceived = (registrationCode) =>
-  registerOrder(registrationCode, "RECEIVED")
-export const addMockResults = (registrationCode) =>
-  registerOrder(registrationCode, "RESULTED")
-export const addMockRejections = (registrationCode) =>
-  registerOrder(registrationCode, "REJECTED")
+export const addMockKitReceived = (registrationCode) => registerOrder(registrationCode, "RECEIVED")
+export const addMockResults = (registrationCode) => registerOrder(registrationCode, "RESULTED")
+export const addMockRejections = (registrationCode) => registerOrder(registrationCode, "REJECTED")
 
 const getOrderResults = async (orderId) => {
   const orderResponse = await getOrderById(orderId)
