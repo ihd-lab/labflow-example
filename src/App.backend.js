@@ -194,6 +194,7 @@ export const createLabOrderById = async (kitId, testType) => {
 
   const samplePayload = {
     kitId: kitId,
+    externalId: "12345678",
     patient: {
       firstName: "John",
       lastName: "Doe",
